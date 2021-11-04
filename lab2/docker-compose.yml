@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+
+  consul-server:
+    image: hashicorp/consul:1.10.3
+    container_name: consul-server
+    restart: always
+    volumes:
+     - ../consul-config/server.json:/consul/config/server.json:ro
+    network_mode: "host"
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+
+  counting-service:
+    image: hashicorp/counting-service:0.0.2
+    container_name: counting
+    restart: always
+    network_mode: "host"
+    ports:
+      - "9001:9001"
+
+  dashboard-service:
+    image: hashicorp/dashboard-service:0.0.4
+    container_name: dashboard
+    restart: always
+    network_mode: "host"
+    ports:
+      - "9002:9002"
+    environment:
+      - COUNTING_SERVICE_URL=http://counting.service.consul:9001

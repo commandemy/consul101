@@ -1,0 +1,5 @@
+counting.json
+dashboard.json
+*.tpl
+rendered.txt
+haproxy.conf

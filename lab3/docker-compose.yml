@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+
+  consul-server:
+    image: hashicorp/consul:1.10.3
+    container_name: consul-server
+    restart: always
+    volumes:
+     - ../consul-config/server.json:/consul/config/server.json:ro
+    networks:
+      - consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    command: "agent"
+
+  counting:
+    image: hashicorp/consul:1.10.3
+    container_name: counting
+    restart: always
+    volumes:
+     - ../consul-config/client1.json:/consul/config/client1.json:ro
+    networks:
+      - consul
+    ports:
+      - "9001:9001"
+    environment:
+      - PORT=9001
+    command: "agent"
+
+  dashboard:
+    image: hashicorp/consul:1.10.3
+    container_name: dashboard
+    restart: always
+    volumes:
+     - ../consul-config/client2.json:/consul/config/client2.json:ro
+    networks:
+      - consul
+    ports:
+      - "9002:9002"
+    environment:
+      - PORT=9002
+      - COUNTING_SERVICE_URL=http://localhost:9001
+    command: "agent"
+
+networks:
+  consul:
+    driver: bridge
+
